@@ -15,11 +15,11 @@ public abstract class Subject : MonoBehaviour
         _observers.Remove(observer);
     }
 
-    public void NotifyObserver()
+    public void NotifyObserver(string sceneName)
     {
         _observers.ForEach((observer) =>
         {
-            observer.OnNotify();
+            observer.OnNotify(sceneName);
         });
     }
 }

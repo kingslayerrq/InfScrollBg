@@ -1,53 +1,78 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class RunManager : Subject, IObserver
 {
    public static RunManager Instance;
    [SerializeField] private int countdownTime = 3;
-
+   private TextMeshProUGUI countdownTimerUI;
    private void Awake()
    {
       if (Instance == null)
       {
+         Instance = this;
          DontDestroyOnLoad(this);
       }
    }
 
- 
+   private void Start()
+   {
+      GameManager.Instance.AddObserver(Instance);
+   }
+
 
    private void StartRun()
    {
+      countdownTimerUI = GameObject.Find("CountDownTimerUI").GetComponent<TextMeshProUGUI>();
+      Debug.Log(countdownTimerUI);
       StartCoroutine(CountDown(countdownTime));
+   }
+
+   public void EndRun()
+   {
+      NotifyObserver("EndScene");
    }
    
    private IEnumerator CountDown(int time)
    {
-      for (int i = time; i > 0; i--)
+      countdownTimerUI.enabled = true;
+      while (time > 0)
       {
          // Show the remaining countdown timer
-         Debug.Log(i + "s remaing");
+         Debug.Log(time + "s remaing");
+         countdownTimerUI.text = time.ToString();
          yield return new WaitForSeconds(1f);
+         time--;
       }
-      Debug.Log("Go!!!");
-      yield return null;
-      NotifyObserver();
+      countdownTimerUI.text = "Go!!!";
+      yield return new WaitForSeconds(0.5f);
+      countdownTimerUI.enabled = false;
+      NotifyObserver("GameScene");
    }
 
-   public void OnNotify()
+   public void OnNotify(string sceneName)
    {
-      // Start the run when notified by GameManager
-      StartRun();
+      switch (sceneName)
+      {
+         case "MenuScene":
+            
+            break;
+         case "GameScene":
+            StartRun();
+            break;
+         case "EndScene":
+            
+            break;
+         default:
+            break;
+      }
    }
-
-   private void OnEnable()
-   {
-      GameManager.Instance.AddObserver(this);
-   }
+   
 
    private void OnDisable()
    {
-      GameManager.Instance.RemoveObserver(this);
+      GameManager.Instance.RemoveObserver(RunManager.Instance);
    }
 }

@@ -1,34 +1,96 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class ScoreManager : MonoBehaviour, IObserver
 {
     public static ScoreManager Instance;
-    public List<int> highScores = new List<int>();
-    public int curScore;
-
+    public bool isScoring = false;
+    public int curScore = 0;
+    public Player player;
+    public TextMeshProUGUI curScoreUI;
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(this);
+            DontDestroyOnLoad(this);                                    // Maybe we dont need this
         }
     }
 
-    public void OnNotify()
+    private void Start()
     {
-        throw new NotImplementedException();
+        RunManager.Instance.AddObserver(Instance);
     }
-    private void OnEnable()
+
+    private void Update()
     {
-        RunManager.Instance.AddObserver(this);
+        if (isScoring)
+        {
+            // TODO: Your scoring mechanism here
+            // On Score change call the UpdateScoreUI
+            // Example
+            curScore++;
+            UpdateScoreUI(curScore);
+        }
     }
+
+    private void UpdateScoreUI(int score)
+    {
+        if (!curScoreUI) curScoreUI = GameObject.Find("CurScoreUI").GetComponent<TextMeshProUGUI>();
+        curScoreUI.text = score.ToString();
+    }
+
+    public void OnNotify(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "MenuScene":
+                HandleMenuSceneScoreManagerAction();
+                break;
+            case "GameScene":
+                HandleGameSceneScoreManagerAction();
+                break;
+            case "EndScene":
+                HandleEndSceneScoreManagerAction();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void HandleMenuSceneScoreManagerAction()
+    {
+        
+    }
+
+    // Start scoring
+    private void HandleGameSceneScoreManagerAction()
+    {
+        curScore = 0;
+        // Get a reference on scene loads
+        if(!curScoreUI) curScoreUI = GameObject.Find("CurScoreUI").GetComponent<TextMeshProUGUI>();
+        isScoring = true;
+    }
+    
+    // Stops recording of score and add to highscore list
+    private void HandleEndSceneScoreManagerAction()
+    {
+        isScoring = false;
+        ScoreBoardManager.Instance.highScores.Add(curScore);
+        // TODO: Maybe enlarge this run's score
+        
+    }
+
+    
+
+   
 
     private void OnDisable()
     {
-        RunManager.Instance.RemoveObserver(this);
+        RunManager.Instance.RemoveObserver(Instance);
     }
 
 }
