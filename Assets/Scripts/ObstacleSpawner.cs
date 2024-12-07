@@ -14,7 +14,7 @@ public class ObstacleSpawner : MonoBehaviour, IObserver
     [SerializeField] private float _difficultyIncreaseTimeInterval = 10f;
     [SerializeField] private float _maxDifficulty = 5f; 
     [SerializeField] private float _spawnDistance = 10f; // Distance ahead of the player to spawn obstacles
-
+    public  List<GameObject> spawnedObstacles = new List<GameObject>();
     [Header("Obstacle Settings")]
     public List<GameObject> obstacles = new List<GameObject>(); // List of obstacle prefabs
     public Transform player; 
@@ -61,13 +61,14 @@ public class ObstacleSpawner : MonoBehaviour, IObserver
         switch (sceneName)
         {
             case "MenuScene":
-                
                 break;
             case "GameScene":
                 isSpawning = true;
                 break;
             case "EndScene":
                 isSpawning = false;
+                // Set all children(Spawned obstacles) immobile
+                spawnedObstacles.ForEach((obstacle) => obstacle.GetComponent<Entity>().shouldStop = true);
                 break;
             default:
                 break;
@@ -84,11 +85,12 @@ public class ObstacleSpawner : MonoBehaviour, IObserver
         // Spawn the obstacle ahead of the player
         Vector3 spawnPosition = new Vector3(
             player.position.x + _spawnDistance,
-            0f, 
+            -0.5f, 
             player.position.z
         );
 
-        Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+        var obstacle = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity, transform);
+        spawnedObstacles.Add(obstacle);
     }
 
     IEnumerator DifficultyScaler()
