@@ -1,10 +1,13 @@
+using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class Player : Subject, IObserver
 {
-    [SerializeField] private int _maxHealth = 3;
+    [SerializeField] private int _maxHealth = 2;
     [SerializeField] private int _curHealth;
+    [SerializeField] private float recoverHealthWaitTime;
     private Animator _playerAnimator;
     public string animBoolName;
     public bool isRunning = false;
@@ -45,13 +48,29 @@ public class Player : Subject, IObserver
     {
         Debug.Log("player hit");
         _curHealth -= amount;
+        // Start Coroutine
+        StartCoroutine(RecoverHealth(recoverHealthWaitTime));
         if (_curHealth == 0)
         {
             // TODO: End Run
             RunManager.Instance.EndRun();
         }
+        // 
     }
 
+    private IEnumerator RecoverHealth(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        // Recover
+        Recover(1);
+    }
+
+    private void Recover(int amount)
+    {
+        _curHealth += amount;
+        _curHealth = Mathf.Min(_maxHealth, _curHealth);             // Clamp below max health
+    }
+    
     private void ResetPlayer()
     {
         _curHealth = _maxHealth;

@@ -700,6 +700,7 @@ MonoBehaviour:
   _difficultyIncreaseTimeInterval: 10
   _maxDifficulty: 5
   _spawnDistance: 10
+  spawnedObstacles: []
   obstacles:
   - {fileID: 1607109562359083747, guid: 928b8a048eb9b41039636e65b49f07ac, type: 3}
   - {fileID: 6502434046066836740, guid: 389393ca1be9d43a19288e297ee04780, type: 3}
@@ -918,6 +919,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6244582558854245906, guid: 1fc2f1e5a633d48f3bb1bff3e1f9bbd2, type: 3}
       propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6692490576273244470, guid: 1fc2f1e5a633d48f3bb1bff3e1f9bbd2, type: 3}
+      propertyPath: recoverHealthWaitTime
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

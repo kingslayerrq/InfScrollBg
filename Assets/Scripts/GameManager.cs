@@ -51,5 +51,6 @@ public class GameManager : Subject
             Debug.Log("Game Scene loaded");
             NotifyObserver(newScene.name);
         }
+        // TODO: End Scene
     }
 }
